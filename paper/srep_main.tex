@@ -51,7 +51,7 @@ loudness-growth slope as the most informative features.  The benefit of
 richer feature sets is largest in mild hearing loss (26--40\,dB), where the
 audiogram alone explains only 9\% of speech-in-noise variance and the full
 battery achieves 37\%.  Poor speech-in-noise performers are classified with
-AUROC\,=\,0.978 (Brier\,=\,0.053).  Cross-cohort validation on NHANES
+AUROC\,=\,0.978 (Brier\,=\,0.053).  Partial cross-cohort construct validation on NHANES
 2017--18 ($N=859$) shows that age adds discriminative power for
 self-reported hearing difficulty (AUROC: 0.758 $\to$ 0.815).  All code is
 released openly.
@@ -209,10 +209,12 @@ noise ($M=-4.6$\,dB, $SD=4.2$\,dB).  Lower SRT indicates better performance.
 
 \textbf{Classification}: \textit{Poor SIN} defined as DTT
 SRT\,$>$\,$-2$\,dB~SNR (21.0\% prevalence, $n=122$).  This threshold lies
-approximately 2.6\,dB above the cohort mean ($-4.6$\,dB) and corresponds to
-the upper tail of the distribution where speech intelligibility degrades
-markedly in typical listening environments; similar DTT-based cut-offs have
-been used in prior clinical screening studies for speech-in-noise deficits.
+approximately 2.6\,dB above the cohort mean ($-4.6$\,dB~SNR, $SD=4.2$\,dB),
+placing it near the 80th percentile and demarcating a clinically relevant
+range where digit-triplet intelligibility reliably deteriorates under
+real-world listening conditions.  The threshold was selected \emph{a priori}
+based on the DTT score distribution; we report results at this fixed cut-off
+without post-hoc optimisation.
 
 \subsection{Models and Evaluation}
 
@@ -520,8 +522,12 @@ frequencies extend to 4\,kHz only, omitting extended high-frequency
 thresholds (6--8\,kHz) linked to cochlear health\cite{Plack2014HiddenHL}.
 Hearing aid use during DTT testing could not be fully controlled.  The NHANES
 validation is partial: the sample ($N=859$, ages 70--80) is restricted to
-older adults, the target is a questionnaire item rather than an administered
-SIN test, and NHANES audiometry covers only 500--4\,kHz.  The moderate-loss
+older adults, and NHANES audiometry covers only 500--4\,kHz.  Crucially,
+the validation targets (AUQ054 and AUQ101) are single self-report Likert
+items, not administered speech-in-noise tests; self-report and audiometric
+performance tap partly distinct constructs (perceived handicap vs.\ objective
+signal detection), so AUROC values on these items cannot be compared directly
+to AUROC values on administered SIN endpoints.  The moderate-loss
 subgroup showed a sharp Ridge $R^2$ decline (0.310$\to$0.020) with the full
 feature set, likely reflecting overfitting; future work should verify this
 with a larger cohort and stronger regularisation.  Finally, with $n=10$ folds

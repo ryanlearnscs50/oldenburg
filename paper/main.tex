@@ -229,10 +229,11 @@ $-4.6$\,dB~($SD=4.2$\,dB).
 
 \textbf{Classification target}: \textit{poor SIN} defined as DTT
 SRT\,${>}\,-2$\,dB~SNR (21.0\% prevalence, $n=122$).  This threshold lies
-approximately 2.6\,dB above the cohort mean ($-4.6$\,dB) and marks the
-region where speech intelligibility degrades markedly in typical listening
-environments; similar DTT-based cut-offs have been used in prior clinical
-screening studies for speech-in-noise deficits.
+approximately 2.6\,dB above the cohort mean ($-4.6$\,dB~SNR, $SD=4.2$\,dB),
+near the 80th percentile of the distribution, and demarcates a range where
+digit-triplet intelligibility reliably deteriorates in real-world conditions.
+The cut-off was selected \emph{a priori} based on the score distribution
+without post-hoc optimisation.
 
 \subsection{Models and Evaluation}
 
@@ -554,9 +555,12 @@ independently of standard audiometric range.  The DTT was administered
 in free field, and the presence or absence of hearing aids during testing
 could not be fully controlled for; future work should verify results
 in aided versus unaided conditions separately.  The NHANES cross-cohort validation is partial: the sample ($N=859$,
-ages 70--80) is restricted to older adults, the target is a questionnaire
-item rather than an administered SIN test, and the NHANES audiogram covers
-only 500--4\,kHz.
+ages 70--80) is restricted to older adults, and the NHANES audiogram covers
+only 500--4\,kHz.  The validation targets (AUQ054 and AUQ101) are single
+self-report Likert items rather than administered speech-in-noise tests;
+self-report and performance measures tap partly distinct constructs (perceived
+handicap vs.\ signal detection), so cross-cohort AUROCs on these items are
+not directly comparable to within-cohort AUROC on administered SIN.
 The moderate-loss subgroup (41--60\,dB) showed a sharp decline in Ridge
 $R^2$ with the full feature set (0.310 $\to$ 0.020), likely reflecting
 overfitting in this small stratum relative to feature count; future work

@@ -3,8 +3,8 @@
 Strategy:
   - Load NHANES audiometry (AUX_J), hearing questionnaire (AUQ_J), demographics (DEMO_J)
   - Build shared features: PTA4 better ear, PTA4 worse ear, age, sex
-  - Target: self-reported hearing difficulty (AUQ054: "Have difficulty hearing?")
-            and AUQ010: "Wear hearing aid now?"
+  - Target: self-reported hearing condition (AUQ054: "How good is your hearing?",
+            1=excellent…6=deaf) and AUQ010: "Wear hearing aid now?"
   - Train on OHHR (audiogram + demos -> binary hearing difficulty proxy)
   - Validate on NHANES (predicting self-reported hearing difficulty from audiogram)
   - Key question: does a model trained on OHHR's objective SIN data
@@ -91,8 +91,8 @@ dem_sub["sex_m"] = (dem_sub["sex"] == 1).astype(int)
 dem_sub = dem_sub.drop(columns=["sex"])
 
 # ── Hearing questionnaire ──────────────────────────────────────────────────────
-# AUQ054: "How often do you have difficulty hearing?" 1=Never, 2=Almost never,
-#          3=Sometimes, 4=Often, 5=Almost always  (or similar)
+# AUQ054: "How good is your hearing?" 1=Excellent, 2=Good, 3=A little trouble,
+#          4=Moderate trouble, 5=A lot of trouble, 6=Deaf; 7/9=missing
 # Check available columns
 print("\nSearhing for key hearing difficulty columns...")
 target_cols = []

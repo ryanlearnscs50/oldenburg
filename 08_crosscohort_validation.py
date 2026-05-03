@@ -62,7 +62,11 @@ nhanes = pd.read_csv("nhanes_processed.csv")
 nhanes["aud_difficulty"] = (nhanes["AUQ054"].isin([3.0,4.0,5.0,6.0])).astype(int)
 # AUQ101: difficulty hearing in noise; NHANES coding is 1=Always … 5=Never
 # (high difficulty = low value), so positive class = 1 or 2 (always/usually).
-nhanes["sin_difficulty"] = (nhanes["AUQ101"] <= 2).astype(int)
+# Values 7 (refused) and 9 (don't know) are NHANES missing codes — set to NaN
+# so they are excluded from valid_sin rather than silently coded as negative.
+auq101 = nhanes["AUQ101"].copy()
+auq101[auq101.isin([7.0, 9.0])] = np.nan
+nhanes["sin_difficulty"] = (auq101 <= 2).astype("Int64").where(auq101.notna())
 
 # AUQ060: do you have difficulty hearing? 1=yes, 2=no
 nhanes["aud_any"] = (nhanes["AUQ060"] == 1.0).astype(int)
