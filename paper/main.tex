@@ -111,9 +111,9 @@ Our contributions are:
         with reliability evaluated via Brier score and calibration curves.
   \item A neural MLP baseline confirming that tree-based models are competitive
         without architectural complexity for this tabular dataset.
-  \item Partial cross-cohort validation: OHHR-trained models transfer to NHANES,
-        corroborating that age improves audiometric hearing difficulty prediction
-        beyond the pure-tone audiogram.
+  \item Partial cross-cohort construct validation on NHANES, showing that
+        OHHR-trained models transfer to self-reported hearing difficulty and
+        corroborating the importance of age beyond the audiogram.
   \item Fully reproducible code and feature engineering pipeline released
         openly to enable future benchmarking.
 \end{enumerate}
@@ -208,9 +208,12 @@ binaural summaries (better, worse, mean, asymmetry), plus age and sex.
 The primary validation outcome was AUQ054 (\textit{``How often do you have
 difficulty hearing?''}, 5-point scale), dichotomised as $\geq 3$ (sometimes
 or more) vs.\ $<3$ (47.8\% positive rate).  A secondary outcome was AUQ101
-(\textit{``Difficulty hearing in noise?''}) dichotomised at $\geq 4$.
-Classifiers trained on OHHR were applied without retraining to the NHANES
-sample.
+(\textit{``Difficulty hearing in noise?''}, 5-point scale coded
+1\,=\,Always \ldots 5\,=\,Never), dichotomised as $\leq 2$ (always or usually;
+positive rate 26.7\%).  Both outcomes are self-report proxies; the analysis
+constitutes partial construct validation rather than replication of the OHHR
+speech-in-noise endpoint.  Classifiers trained on OHHR were applied without
+retraining to the NHANES sample.
 
 \subsection{Prediction Targets}
 
@@ -223,9 +226,11 @@ $-4.6$\,dB~($SD=4.2$\,dB).
 ($M=-1.5$,\,$SD=3.1$\,dB).
 
 \textbf{Classification target}: \textit{poor SIN} defined as DTT
-SRT\,${>}\,-2$\,dB~SNR (21.0\% prevalence, $n=122$), a clinically
-meaningful threshold indicating substantially impaired speech-in-noise
-understanding.
+SRT\,${>}\,-2$\,dB~SNR (21.0\% prevalence, $n=122$).  This threshold lies
+approximately 2.6\,dB above the cohort mean ($-4.6$\,dB) and marks the
+region where speech intelligibility degrades markedly in typical listening
+environments; similar DTT-based cut-offs have been used in prior clinical
+screening studies for speech-in-noise deficits.
 
 \subsection{Models and Evaluation}
 
@@ -377,9 +382,9 @@ stratified CV.  Both LR (Block~A) and LightGBM (Block~E) achieve high
 discrimination (AUROC\,$>$\,0.96), with LightGBM reaching \textbf{AUROC =
 0.978, AUPRC = 0.938}.  Brier scores are low (LR: 0.058; LightGBM: 0.053),
 and calibration curves (Fig.~\ref{fig:subgroup}b) show close agreement
-between predicted probabilities and observed event rates across deciles.
-This indicates that the models produce reliable probabilistic risk
-estimates---a prerequisite for clinical screening use.
+between predicted probabilities and observed event rates across deciles,
+indicating well-calibrated probabilities within this cohort; prospective
+external validation would be needed before clinical deployment.
 
 \begin{table}[t]
 \caption{Classification Performance (poor SIN, DTT SRT $> -2$ dB)}
@@ -446,25 +451,24 @@ probability transfers meaningfully across cohorts.  Adding age (PTA4+Age)
 raises the NHANES AUROC to 0.801 ($\Delta = +0.054$), corroborating in an
 independent cohort that age is an informative predictor beyond threshold
 sensitivity.  The matched 8-frequency HTL model (both ears, 500--4000\,Hz)
-achieves the highest NHANES AUROC of 0.833.  Transfer to the NHANES AUQ101
-speech-in-noise item yields near-chance AUROC ($\approx 0.25$--$0.30$),
-reflecting the psychometric mismatch between a single binary question and
-a standardised adaptive DTT SRT; cross-cohort conclusions are therefore
-restricted to the general hearing difficulty endpoint.
+achieves the highest NHANES AUROC of 0.833.  For the SIN-specific item
+(AUQ101, $\leq 2$), transfer AUROCs are somewhat lower but well above chance
+(PTA4-only: 0.695; PTA4+Age: 0.744; matched HTL+Age: 0.763), consistent with
+SIN difficulty being a more specific construct than general hearing difficulty.
 
 \begin{table}[h]
 \caption{Cross-Cohort Transfer: OHHR $\to$ NHANES}
 \label{tab:crosscohort}
 \centering\small
-\begin{tabular}{lcc}
+\begin{tabular}{lccc}
 \toprule
-Feature set & OHHR AUROC & NHANES AUROC \\
-            & (OOF)      & (hearing diff.) \\
+Feature set & OHHR AUROC & NHANES AUQ054 & NHANES AUQ101 \\
+            & (OOF)      & (hearing diff.) & (SIN diff.) \\
 \midrule
-PTA4 only              & 0.943 & 0.747 \\
-PTA4 + Age             & 0.968 & 0.801 \\
-PTA4 + Age + Sex       & 0.968 & 0.797 \\
-Matched HTL + Age      & 0.958 & \textbf{0.833} \\
+PTA4 only              & 0.943 & 0.747 & 0.695 \\
+PTA4 + Age             & 0.968 & 0.801 & 0.744 \\
+PTA4 + Age + Sex       & 0.968 & 0.797 & 0.745 \\
+Matched HTL + Age      & 0.958 & \textbf{0.833} & \textbf{0.763} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -518,18 +522,15 @@ datasets with $n < 10{,}000$~\cite{Gorishniy2021Revisiting}.  For larger
 prospective audiological cohorts, neural architectures incorporating
 auxiliary tasks or multi-site fine-tuning may yield more meaningful gains.
 
-\textit{Cross-cohort generalisability.}  The NHANES transfer results (AUROC
-0.75--0.83) are encouraging: despite a distributional shift between a German
-clinical cohort and a US general population survey, PTA-derived risk scores
-retain meaningful discriminative power for self-reported hearing difficulty.
-The finding that age improves NHANES AUROC by $+0.054$ replicates, in an
-independent population-based sample of 859 older adults, the
-SHAP-identified importance of age beyond the audiogram.  The failure to
-transfer to the NHANES AUQ101 speech-in-noise questionnaire item is
-unsurprising given the psychometric mismatch between a single Likert item
-and a standardised adaptive procedure; a more direct cross-cohort test
-would require administered SIN measurements (e.g., UK Biobank digit-triplet
-data or the LISTEN corpus).
+\textit{Cross-cohort generalisability.}  The NHANES transfer results (AUQ054 AUROC 0.75--0.83; AUQ101 AUROC
+0.69--0.76) suggest that OHHR-trained models retain meaningful discriminative
+power across both general hearing difficulty and the more specific SIN-difficulty
+item.  The finding that age improves NHANES AUQ054 AUROC by $+0.054$
+corroborates, in a second independent cohort, the SHAP-identified importance of
+age beyond the audiogram.  These results should be interpreted as partial
+construct validation: both NHANES outcomes are single self-report items rather
+than administered SIN tests, and a more direct cross-cohort test would require
+administered SIN measurements (e.g., UK Biobank digit-triplet data).
 
 \textit{Comparison to prior work.}  Our best regression performance
 ($R^2 = 0.81$, RF, Block~E) is consistent with the upper range of
@@ -625,7 +626,7 @@ pp.~504--513, 2023.
 
 \bibitem{OHHR2025}
 B. Kollmeier \textit{et al.}, ``The Oldenburg Hearing Health Record (OHHR),''
-\textit{Scientific Data}, vol.~12, 2025, Art. no. 705.
+\textit{Scientific Data}, vol.~12, 2025, Art. no. 1546.
 DOI: 10.1038/s41597-025-05884-y.
 
 \bibitem{Brand2002}

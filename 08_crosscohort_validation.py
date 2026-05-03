@@ -59,9 +59,9 @@ nhanes = pd.read_csv("nhanes_processed.csv")
 # 1=Never, 2=Almost never, 3=Sometimes, 4=Often, 5=Almost always
 # Recode to binary: difficulty = 3+ (sometimes or more)
 nhanes["aud_difficulty"] = (nhanes["AUQ054"].isin([3.0,4.0,5.0])).astype(int)
-# Also use AUQ101: difficulty understanding speech in noise (5-point, n=859)
-# 1=Never..5=Almost always
-nhanes["sin_difficulty"] = (nhanes["AUQ101"] >= 4).astype(int)
+# AUQ101: difficulty hearing in noise; NHANES coding is 1=Always … 5=Never
+# (high difficulty = low value), so positive class = 1 or 2 (always/usually).
+nhanes["sin_difficulty"] = (nhanes["AUQ101"] <= 2).astype(int)
 
 # AUQ060: do you have difficulty hearing? 1=yes, 2=no
 nhanes["aud_any"] = (nhanes["AUQ060"] == 1.0).astype(int)
