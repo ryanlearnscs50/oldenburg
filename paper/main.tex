@@ -49,7 +49,7 @@ hearing loss (26--40\,dB), where the audiogram alone explains only 9\% of
 speech-in-noise variance.  Classification of clinically poor
 speech-in-noise performers achieves AUROC = 0.978 with well-calibrated
 probability estimates (Brier score = 0.053).  Partial cross-cohort
-validation on NHANES 2017--18 ($N=859$, ages 70--80) achieves AUROC = 0.80
+validation on NHANES 2017--18 ($N=859$, ages 70--80) achieves AUROC = 0.815
 for self-reported hearing difficulty, corroborating the importance of age
 as a predictor beyond audiometric thresholds.  Our code, feature
 engineering scripts, and pre-trained model weights are released openly.
@@ -205,9 +205,11 @@ NHANES audiometric testing in that cycle was restricted to participants aged
 participants (ages 70--80; mean age as in NHANES survey design).  Shared
 features extracted from NHANES were: PTA4 per ear (500--4000\,Hz), and their
 binaural summaries (better, worse, mean, asymmetry), plus age and sex.
-The primary validation outcome was AUQ054 (\textit{``How often do you have
-difficulty hearing?''}, 5-point scale), dichotomised as $\geq 3$ (sometimes
-or more) vs.\ $<3$ (47.8\% positive rate).  A secondary outcome was AUQ101
+The primary validation outcome was AUQ054 (\textit{``How good is your
+hearing?''}, 6-point scale: 1\,=\,excellent, 2\,=\,good, 3\,=\,a little
+trouble, 4\,=\,moderate trouble, 5\,=\,a lot of trouble, 6\,=\,deaf),
+dichotomised as $\geq 3$ (any hearing trouble; positive rate 48.8\%).
+A secondary outcome was AUQ101
 (\textit{``Difficulty hearing in noise?''}, 5-point scale coded
 1\,=\,Always \ldots 5\,=\,Never), dichotomised as $\leq 2$ (always or usually;
 positive rate 26.7\%).  Both outcomes are self-report proxies; the analysis
@@ -444,16 +446,16 @@ cohort and applied them without retraining to the NHANES 2017--18 audiometric
 sample ($N=859$, ages 70--80), using AUQ054
 (self-reported hearing difficulty $\geq$3) as the validation target.
 Table~\ref{tab:crosscohort} and Fig.~\ref{fig:crosscohort} summarise the
-results.  A PTA4-only model trained on OHHR achieves AUROC = 0.747 on
+results.  A PTA4-only model trained on OHHR achieves AUROC = 0.758 on
 NHANES---above chance despite a substantial distributional shift (German
 clinical vs.\ US general population)---indicating that audiogram-based SIN
 probability transfers meaningfully across cohorts.  Adding age (PTA4+Age)
-raises the NHANES AUROC to 0.801 ($\Delta = +0.054$), corroborating in an
+raises the NHANES AUROC to 0.815 ($\Delta = +0.057$), corroborating in an
 independent cohort that age is an informative predictor beyond threshold
 sensitivity.  The matched 8-frequency HTL model (both ears, 500--4000\,Hz)
-achieves the highest NHANES AUROC of 0.833.  For the SIN-specific item
+achieves the highest NHANES AUROC of 0.847.  For the SIN-specific item
 (AUQ101, $\leq 2$), transfer AUROCs are somewhat lower but well above chance
-(PTA4-only: 0.695; PTA4+Age: 0.744; matched HTL+Age: 0.763), consistent with
+(PTA4-only: 0.695; PTA4+Age: 0.744; matched HTL+Age: 0.764), consistent with
 SIN difficulty being a more specific construct than general hearing difficulty.
 
 \begin{table}[h]
@@ -465,10 +467,10 @@ SIN difficulty being a more specific construct than general hearing difficulty.
 Feature set & OHHR AUROC & NHANES AUQ054 & NHANES AUQ101 \\
             & (OOF)      & (hearing diff.) & (SIN diff.) \\
 \midrule
-PTA4 only              & 0.943 & 0.747 & 0.695 \\
-PTA4 + Age             & 0.968 & 0.801 & 0.744 \\
-PTA4 + Age + Sex       & 0.968 & 0.797 & 0.745 \\
-Matched HTL + Age      & 0.958 & \textbf{0.833} & \textbf{0.763} \\
+PTA4 only              & 0.943 & 0.758 & 0.695 \\
+PTA4 + Age             & 0.968 & 0.815 & 0.744 \\
+PTA4 + Age + Sex       & 0.968 & 0.811 & 0.745 \\
+Matched HTL + Age      & 0.958 & \textbf{0.847} & \textbf{0.764} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -525,7 +527,7 @@ auxiliary tasks or multi-site fine-tuning may yield more meaningful gains.
 \textit{Cross-cohort generalisability.}  The NHANES transfer results (AUQ054 AUROC 0.75--0.83; AUQ101 AUROC
 0.69--0.76) suggest that OHHR-trained models retain meaningful discriminative
 power across both general hearing difficulty and the more specific SIN-difficulty
-item.  The finding that age improves NHANES AUQ054 AUROC by $+0.054$
+item.  The finding that age improves NHANES AUQ054 AUROC by $+0.057$
 corroborates, in a second independent cohort, the SHAP-identified importance of
 age beyond the audiogram.  These results should be interpreted as partial
 construct validation: both NHANES outcomes are single self-report items rather
@@ -573,7 +575,7 @@ the audiogram explains only 9\% of SIN variance and a broader battery reaches
 26\%.  Age and loudness growth parameters are the most informative predictors
 beyond the audiogram; this finding partially replicates in independent NHANES
 data ($N=859$, ages 70--80), where adding age to a PTA4-only model raises
-cross-cohort AUROC from 0.747 to 0.801.  An MLP neural baseline is
+cross-cohort AUROC from 0.758 to 0.815.  An MLP neural baseline is
 competitive with tree ensembles ($R^2=0.795$),
 confirming that the performance ceiling on this dataset is not attributable
 to model capacity.  Calibrated classification of clinically poor SIN
@@ -730,10 +732,10 @@ Processing Systems}, vol.~34, pp.~18363--18374, 2021.
   \includegraphics[width=0.95\textwidth]{fig5_crosscohort.png}
   \caption{Cross-cohort validation: OHHR models applied to NHANES.
   (a) AUROC for predicting NHANES self-reported hearing difficulty (AUQ054)
-  by feature set; adding age to PTA4 raises AUROC from 0.747 to 0.801.
+  by feature set; adding age to PTA4 raises AUROC from 0.758 to 0.815.
   (b) Distribution of model-predicted P(poor SIN) stratified by NHANES
-  AUQ054 category (1 = never, 5 = almost always); predicted risk increases
-  monotonically with reported difficulty. (c) Calibration of PTA4-only and
+  AUQ054 category (1 = excellent, 5 = a lot of trouble, 6 = deaf); predicted
+  risk increases monotonically with hearing difficulty category. (c) Calibration of PTA4-only and
   PTA4+Age classifiers evaluated on OHHR out-of-fold predictions.}
   \label{fig:crosscohort}
 \end{figure*}

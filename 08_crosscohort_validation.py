@@ -55,10 +55,11 @@ OHHR_AUDIO_SHARED = (
 # ── Load NHANES processed ─────────────────────────────────────────────────────
 nhanes = pd.read_csv("nhanes_processed.csv")
 
-# Use AUQ054: "How often do you have difficulty hearing?"
-# 1=Never, 2=Almost never, 3=Sometimes, 4=Often, 5=Almost always
-# Recode to binary: difficulty = 3+ (sometimes or more)
-nhanes["aud_difficulty"] = (nhanes["AUQ054"].isin([3.0,4.0,5.0])).astype(int)
+# AUQ054: "How good is your hearing?"
+# 1=Excellent, 2=Good, 3=A little trouble, 4=Moderate trouble,
+# 5=A lot of trouble, 6=Deaf
+# Positive class = any hearing trouble (>=3), including deaf (6)
+nhanes["aud_difficulty"] = (nhanes["AUQ054"].isin([3.0,4.0,5.0,6.0])).astype(int)
 # AUQ101: difficulty hearing in noise; NHANES coding is 1=Always … 5=Never
 # (high difficulty = low value), so positive class = 1 or 2 (always/usually).
 nhanes["sin_difficulty"] = (nhanes["AUQ101"] <= 2).astype(int)
@@ -73,7 +74,7 @@ print("=== NHANES validation targets ===")
 print(f"  AUQ054 (hearing difficulty >=3): "
       f"{nhanes.loc[valid_aud,'aud_difficulty'].sum()} / {valid_aud.sum()} "
       f"({100*nhanes.loc[valid_aud,'aud_difficulty'].mean():.1f}%)")
-print(f"  AUQ101 (SIN difficulty >=4):     "
+print(f"  AUQ101 (SIN difficulty <=2):     "
       f"{nhanes.loc[valid_sin,'sin_difficulty'].sum()} / {valid_sin.sum()} "
       f"({100*nhanes.loc[valid_sin,'sin_difficulty'].mean():.1f}%)")
 print(f"  AUQ060 (any hearing difficulty): "
@@ -110,10 +111,9 @@ def transfer_predict(feats_ohhr, feats_nhanes=None):
     full_model = lgb_cls()
     full_model.fit(X_ohhr_imp, y_ohhr)
 
-    # Apply same imputer stats (medians) to NHANES features in same order
+    # Apply OHHR-trained imputer medians to NHANES (true transfer: no refitting)
     X_nhanes = nhanes[feats_nhanes].values
-    imp_nhanes = SimpleImputer(strategy="median").fit(X_nhanes)
-    X_nhanes_imp = imp_nhanes.transform(X_nhanes)
+    X_nhanes_imp = imp_train.transform(X_nhanes)
     transfer_prob = full_model.predict_proba(X_nhanes_imp)[:, 1]
     return oof_prob, ohhr_auroc, transfer_prob
 
@@ -170,9 +170,9 @@ print("\nSaved: results_crosscohort.csv")
 print("\n=== Predicted P(poor SIN) by NHANES hearing difficulty category ===")
 best_prob = all_transfer_probs.get("PTA4 + Age", all_transfer_probs.get("PTA4 only"))
 aud_cats = nhanes["AUQ054"].dropna()
-print(f"  Category means (AUQ054, 1=never..5=always):")
+print(f"  Category means (AUQ054, 1=excellent..6=deaf):")
 for cat in sorted(aud_cats.unique()):
-    if cat > 5: continue
+    if cat > 6: continue
     mask = nhanes["AUQ054"] == cat
     if mask.sum() < 5: continue
     print(f"    {cat:.0f}: mean P={best_prob[mask].mean():.3f}  n={mask.sum()}")
@@ -207,7 +207,7 @@ ax2 = axes[1]
 if best_prob is not None:
     cat_data = []
     cat_labels = []
-    for cat in [1.0, 2.0, 3.0, 4.0, 5.0]:
+    for cat in [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]:
         mask = nhanes["AUQ054"] == cat
         if mask.sum() < 5: continue
         cat_data.append(best_prob[mask])
@@ -216,7 +216,7 @@ if best_prob is not None:
                 boxprops=dict(facecolor="#55A868", alpha=0.6),
                 medianprops=dict(color="k", linewidth=2))
     ax2.set_ylabel("Predicted P(poor SIN)")
-    ax2.set_xlabel("NHANES AUQ054 (1=never, 5=almost always)")
+    ax2.set_xlabel("NHANES AUQ054 (1=excellent, 5=a lot of trouble, 6=deaf)")
     ax2.set_title("(b) Predicted risk by difficulty category", fontweight="bold")
 
 # Panel C: calibration plot (OHHR OOF)
