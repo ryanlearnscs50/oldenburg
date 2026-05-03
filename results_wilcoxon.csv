@@ -1,0 +1,4 @@
+model_a,model_b,W,p,sig
+LightGBM,RF,15.0,0.232421875,ns
+LightGBM,Ridge,1.0,0.00390625,**
+RF,Ridge,1.0,0.00390625,**

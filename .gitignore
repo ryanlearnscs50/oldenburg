@@ -1,0 +1,31 @@
+# Raw data — download from Zenodo / CDC instead
+ohhr_data/
+ohhr_data.zip
+nhanes_raw/
+*.XPT
+*.xpt
+
+# Large intermediate files
+ohhr_flat.csv
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.egg-info/
+
+# LaTeX build artefacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.blg
+*.bbl
+
+# OS
+.DS_Store
+Thumbs.db
