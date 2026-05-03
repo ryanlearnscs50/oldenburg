@@ -1,0 +1,109 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.8em}
+
+\begin{document}
+
+3 May 2026
+
+Editorial Office\\
+\textit{OTO Open}\\
+American Academy of Otolaryngology--Head and Neck Surgery Foundation
+
+\bigskip
+
+Dear Editor,
+
+I submit for your consideration the manuscript titled \textbf{``Predicting
+Speech-in-Noise Performance Beyond the Pure-Tone Audiogram: A Machine
+Learning Benchmark on the Oldenburg Hearing Health Record''} for publication
+as an Original Research article in \textit{OTO Open}.
+
+\textbf{Relevance to OTO Open.}
+Sensorineural hearing loss and its audiological management are core domains
+of otolaryngology practice.  Despite widespread use of the pure-tone
+audiogram, it explains only part of real-world speech understanding---leaving
+clinicians with limited tools for counselling patients in the grey zone of
+hearing aid candidacy.  This paper directly addresses that gap by asking:
+\emph{how much speech-in-noise performance can be predicted from progressively
+richer audiological measurements, and for which patients does extended
+assessment add the most value?}  The answers have immediate relevance for
+audiological counselling in otolaryngology clinics.
+
+\textbf{What this paper does.}
+I present the first systematic machine learning benchmark on the Oldenburg
+Hearing Health Record (OHHR; Kollmeier et al., \textit{Scientific Data}
+2025), an open CC~BY~4.0 dataset of 581 adults with audiograms, adaptive
+loudness scaling, speech-in-noise tests, and cognitive and self-report
+measures.  Five progressively richer feature blocks (1--41 features) are
+evaluated across Ridge regression, Random Forest, LightGBM, and a multilayer
+perceptron under 10-fold cross-validation, with SHAP-based feature
+importance, severity-stratified analysis, calibrated probabilistic
+classification, a minimal-predictor analysis, and partial cross-cohort
+construct validation on NHANES 2017--18 ($N{=}859$).
+
+\textbf{Key findings.}
+A single binaural pure-tone average captures 71\% of speech-in-noise
+variance; the full battery achieves $R^2{=}0.81$ (Random Forest,
+MAE\,=\,1.23\,dB~SNR).  The clinical benefit of extended assessment is
+concentrated in \emph{mild} hearing loss (26--40\,dB), where the audiogram
+explains only 9\% of SIN variance and the full battery achieves 37\%---exactly
+the patient group where audiogram-only counselling is most uncertain and
+hearing aid candidacy most equivocal.  Age and loudness-growth slope are the
+most informative features beyond the audiogram, a finding that partially
+replicates in independent NHANES data (AUROC: 0.758 $\to$ 0.815 when age is
+added).  Classification of poor SIN performers achieves AUROC\,=\,0.978 with
+well-calibrated probability estimates within this cohort.
+
+\textbf{Reproducibility.}
+This study analyses two pre-existing, publicly available, de-identified
+datasets (OHHR at Zenodo DOI 10.5281/zenodo.16919812, and NHANES via the
+CDC); no institutional review board approval was required.  All analysis code
+is released openly under the MIT licence.
+
+\textbf{Suggested reviewers.}
+\begin{itemize}
+  \item \textbf{Prof.\ M. Samantha Lewis}, National Center for Rehabilitative
+        Auditory Research, VA Portland Health Care System, USA.\\
+        \textit{Expertise: clinical audiology, speech-in-noise outcomes,
+        audiological rehabilitation.}
+
+  \item \textbf{Prof.\ Michael Akeroyd}, Hearing Sciences, University of
+        Nottingham, UK.
+        (\href{mailto:michael.akeroyd@nottingham.ac.uk}{michael.akeroyd@nottingham.ac.uk})\\
+        \textit{Expertise: hearing epidemiology, large-scale audiological
+        datasets, quantitative hearing research.}
+
+  \item \textbf{Prof.\ Tobias Dau}, Hearing Systems Group, Technical
+        University of Denmark (DTU), Denmark.
+        (\href{mailto:tobias.dau@dtu.dk}{tobias.dau@dtu.dk})\\
+        \textit{Expertise: computational auditory modelling, speech
+        intelligibility prediction, hearing science.}
+\end{itemize}
+
+\textbf{Competing interests.}
+The author declares no competing financial or non-financial interests.
+
+\textbf{AI assistance.}
+Portions of the code and manuscript were drafted with the assistance of an
+AI language model (Claude, Anthropic).  All scientific content, numerical
+results, and interpretations were verified by the author.
+
+I confirm that this manuscript has not been published elsewhere and is not
+under consideration by any other journal.
+
+Yours sincerely,
+
+\bigskip
+Ryan Yi Sheng Neo\\
+Independent Researcher\\
+\href{mailto:realryanneo@gmail.com}{realryanneo@gmail.com}\\
+\url{https://github.com/ryanlearnscs50/oldenburg}
+
+\end{document}
